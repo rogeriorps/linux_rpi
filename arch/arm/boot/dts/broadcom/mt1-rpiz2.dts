@@ -134,6 +134,20 @@
 		brcm,pins = <>;
 		brcm,function = <>;
 	};
+
+        rotenc: rotary-encoder@0 {
+                compatible = "rotary-encoder";
+
+                /* A, B channels (BCM GPIO numbers) */
+                gpios = <&gpio 5  GPIO_ACTIVE_LOW>,
+                        <&gpio 16 GPIO_ACTIVE_LOW>;
+
+                /* Optional but recommended */
+                linux,axis = <ABS_X>;               /* produces ABS_X events */
+                rotary-encoder,relative-axis;       /* relative movement (like a mouse wheel) */
+                rotary-encoder,steps-per-period = <4>; /* common for quadrature */
+                debounce-interval = <2>;            /* ms; tweak (1–5 typical) */
+            };
 };
 
 &mmcnr {
