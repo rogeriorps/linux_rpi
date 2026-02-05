@@ -8,13 +8,99 @@
 #include "bcm283x-rpi-led-deprecated.dtsi"
 
 / {
-	compatible = "raspberrypi,model-zero-2-w", "brcm,bcm2837";
-	model = "Raspberry Pi Zero 2 W";
+	compatible = "raspberrypi,model-zero-2-w", "brcm,bcm2837", "ns,mt1";
+	model = "mt1 Raspberry Pi Zero 2 W mt1";
 
 	aliases {
 		serial0 = &uart1;
 		serial1 = &uart0;
 		mmc1 = &mmcnr;
+	};
+
+	rotenc0: rotary-encoder@0 {
+		compatible = "rotary-encoder";
+		pinctrl-names = "default";
+		pinctrl-0 = <&rotenc0_pins>;
+
+		/* A, B channels (BCM GPIO numbers) */
+		gpios = <&gpio 5  GPIO_ACTIVE_LOW>,
+			<&gpio 16 GPIO_ACTIVE_LOW>;
+
+		/* Optional but recommended */
+		//linux,axis = <ABS_X>;               /* produces ABS_X events */
+		rotary-encoder,relative-axis;       /* relative movement (like a mouse wheel) */
+		rotary-encoder,steps-per-period = <4>; /* common for quadrature */
+		debounce-interval = <2>;            /* ms; tweak (1–5 typical) */
+	};
+
+	rotenc1: rotary-encoder@1 {
+		compatible = "rotary-encoder";
+		pinctrl-names = "default";
+		pinctrl-0 = <&rotenc1_pins>;
+
+		/* A, B channels (BCM GPIO numbers) */
+		gpios = <&gpio 17 GPIO_ACTIVE_LOW>,
+			<&gpio 22 GPIO_ACTIVE_LOW>;
+
+		rotary-encoder,relative-axis;
+		rotary-encoder,steps-per-period = <4>;
+		debounce-interval = <2>;
+	};
+
+	rotenc2: rotary-encoder@2 {
+		compatible = "rotary-encoder";
+		pinctrl-names = "default";
+		pinctrl-0 = <&rotenc2_pins>;
+
+		/* A, B channels (BCM GPIO numbers) */
+		gpios = <&gpio 23 GPIO_ACTIVE_LOW>,
+			<&gpio 24 GPIO_ACTIVE_LOW>;
+
+		rotary-encoder,relative-axis;
+		rotary-encoder,steps-per-period = <4>;
+		debounce-interval = <2>;
+	};
+
+	rotenc3: rotary-encoder@3 {
+		compatible = "rotary-encoder";
+		pinctrl-names = "default";
+		pinctrl-0 = <&rotenc3_pins>;
+
+		/* A, B channels (BCM GPIO numbers) */
+		gpios = <&gpio 25 GPIO_ACTIVE_LOW>,
+			<&gpio 26 GPIO_ACTIVE_LOW>;
+
+		rotary-encoder,relative-axis;
+		rotary-encoder,steps-per-period = <4>;
+		debounce-interval = <2>;
+	};
+
+	rotenc4: rotary-encoder@4 {
+		compatible = "rotary-encoder";
+		pinctrl-names = "default";
+		pinctrl-0 = <&rotenc4_pins>;
+
+		/* A, B channels (BCM GPIO numbers) */
+		gpios = <&gpio 27 GPIO_ACTIVE_LOW>,
+			<&gpio 14 GPIO_ACTIVE_LOW>;
+
+		rotary-encoder,relative-axis;
+		rotary-encoder,steps-per-period = <4>;
+		debounce-interval = <2>;
+	};
+
+	rotenc5: rotary-encoder@5 {
+		compatible = "rotary-encoder";
+		pinctrl-names = "default";
+		pinctrl-0 = <&rotenc5_pins>;
+
+		/* A, B channels (BCM GPIO numbers) */
+		gpios = <&gpio 13 GPIO_ACTIVE_LOW>,
+			<&gpio 12 GPIO_ACTIVE_LOW>;
+
+		rotary-encoder,relative-axis;
+		rotary-encoder,steps-per-period = <4>;
+		debounce-interval = <2>;
 	};
 };
 
@@ -100,6 +186,42 @@
 		brcm,function = <4>; /* alt0 */
 	};
 
+	rotenc0_pins: rotenc0_pins {
+		brcm,pins = <5 16>;
+		brcm,function = <0>; /* input */
+		brcm,pull = <2 2>; /* up */
+	};
+
+	rotenc1_pins: rotenc1_pins {
+		brcm,pins = <17 22>;
+		brcm,function = <0>; /* input */
+		brcm,pull = <2 2>; /* up */
+	};
+
+	rotenc2_pins: rotenc2_pins {
+		brcm,pins = <23 24>;
+		brcm,function = <0>; /* input */
+		brcm,pull = <2 2>; /* up */
+	};
+
+	rotenc3_pins: rotenc3_pins {
+		brcm,pins = <25 26>;
+		brcm,function = <0>; /* input */
+		brcm,pull = <2 2>; /* up */
+	};
+
+	rotenc4_pins: rotenc4_pins {
+		brcm,pins = <27 14>;
+		brcm,function = <0>; /* input */
+		brcm,pull = <2 2>; /* up */
+	};
+
+	rotenc5_pins: rotenc5_pins {
+		brcm,pins = <13 12>;
+		brcm,function = <0>; /* input */
+		brcm,pull = <2 2>; /* up */
+	};
+
 	sdio_pins: sdio_pins {
 		brcm,pins =     <34 35 36 37 38 39>;
 		brcm,function = <7>; // alt3 = SD1
@@ -135,19 +257,6 @@
 		brcm,function = <>;
 	};
 
-        rotenc: rotary-encoder@0 {
-                compatible = "rotary-encoder";
-
-                /* A, B channels (BCM GPIO numbers) */
-                gpios = <&gpio 5  GPIO_ACTIVE_LOW>,
-                        <&gpio 16 GPIO_ACTIVE_LOW>;
-
-                /* Optional but recommended */
-                linux,axis = <ABS_X>;               /* produces ABS_X events */
-                rotary-encoder,relative-axis;       /* relative movement (like a mouse wheel) */
-                rotary-encoder,steps-per-period = <4>; /* common for quadrature */
-                debounce-interval = <2>;            /* ms; tweak (1–5 typical) */
-            };
 };
 
 &mmcnr {
