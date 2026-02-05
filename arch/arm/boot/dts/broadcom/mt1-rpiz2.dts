@@ -222,6 +222,12 @@
 		brcm,pull = <2 2>; /* up */
 	};
 
+	pca_int_reset_pins: pca_int_reset_pins {
+		brcm,pins = <6 7>;
+		brcm,function = <0>; /* input */
+		brcm,pull = <2 2>; /* up */
+	};
+
 	sdio_pins: sdio_pins {
 		brcm,pins =     <34 35 36 37 38 39>;
 		brcm,function = <7>; // alt3 = SD1
@@ -299,6 +305,11 @@
 		reg = <0x20>;
 		gpio-controller;
 		#gpio-cells = <2>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&pca_int_reset_pins>;
+		reset-gpios = <&gpio 6 GPIO_ACTIVE_LOW>;
+		interrupt-parent = <&gpio>;
+		interrupts = <7 IRQ_TYPE_LEVEL_LOW>;
 
 		gpio-line-names =
 			"mute1", "mute2", "mute3", "mute4", "solo1", "solo2", "solo3", "solo4",
