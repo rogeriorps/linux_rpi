@@ -299,6 +299,7 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&i2c1_pins>;
 	clock-frequency = <100000>;
+	status = "okay";
 
 	pca9698: gpio@20 {
 		compatible = "nxp,pca9698";
@@ -527,6 +528,16 @@
 			bias-pull-up;
 		};
 	};
+
+	pcm5122: pcm5122@4c {
+		#sound-dai-cells = <0>;
+		compatible = "ti,pcm5122";
+		reg = <0x4c>;
+		AVDD-supply = <&vdd_3v3_reg>;
+		DVDD-supply = <&vdd_3v3_reg>;
+		CPVDD-supply = <&vdd_3v3_reg>;
+		status = "okay";
+	};
 };
 
 &i2c2 {
@@ -536,6 +547,27 @@
 &i2s {
 	pinctrl-names = "default";
 	pinctrl-0 = <&i2s_pins>;
+	status = "okay";
+};
+
+&sound {
+	compatible = "simple-audio-card";
+	status = "okay";
+
+	simple-audio-card,name = "Waveshare-PCM5122";
+	simple-audio-card,format = "i2s";
+	simple-audio-card,bitclock-master = <&snd_cpu>;
+	simple-audio-card,frame-master = <&snd_cpu>;
+
+	snd_cpu: simple-audio-card,cpu {
+		sound-dai = <&i2s>;
+		dai-tdm-slot-num = <2>;
+		dai-tdm-slot-width = <32>;
+	};
+
+	simple-audio-card,codec {
+		sound-dai = <&pcm5122>;
+	};
 };
 
 &led_act {
