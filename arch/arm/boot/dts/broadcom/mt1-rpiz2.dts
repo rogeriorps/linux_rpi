@@ -8,8 +8,8 @@
 #include "bcm283x-rpi-led-deprecated.dtsi"
 
 / {
-	compatible = "raspberrypi,model-zero-2-w", "brcm,bcm2837", "ns,mt1";
-	model = "mt1 Raspberry Pi Zero 2 W mt1";
+	compatible = "raspberrypi,model-zero-2-w", "brcm,bcm2837";
+	model = "Raspberry Pi Zero 2 W";
 
 	aliases {
 		serial0 = &uart1;
@@ -17,7 +17,7 @@
 		mmc1 = &mmcnr;
 	};
 
-	rotenc0: rotary-encoder@0 {
+	rotenc0: rotary-encoder0 {
 		compatible = "rotary-encoder";
 		pinctrl-names = "default";
 		pinctrl-0 = <&rotenc0_pins>;
@@ -33,7 +33,7 @@
 		debounce-interval = <2>;            /* ms; tweak (1–5 typical) */
 	};
 
-	rotenc1: rotary-encoder@1 {
+	rotenc1: rotary-encoder1 {
 		compatible = "rotary-encoder";
 		pinctrl-names = "default";
 		pinctrl-0 = <&rotenc1_pins>;
@@ -47,7 +47,7 @@
 		debounce-interval = <2>;
 	};
 
-	rotenc2: rotary-encoder@2 {
+	rotenc2: rotary-encoder2 {
 		compatible = "rotary-encoder";
 		pinctrl-names = "default";
 		pinctrl-0 = <&rotenc2_pins>;
@@ -61,7 +61,7 @@
 		debounce-interval = <2>;
 	};
 
-	rotenc3: rotary-encoder@3 {
+	rotenc3: rotary-encoder3 {
 		compatible = "rotary-encoder";
 		pinctrl-names = "default";
 		pinctrl-0 = <&rotenc3_pins>;
@@ -75,21 +75,21 @@
 		debounce-interval = <2>;
 	};
 
-	rotenc4: rotary-encoder@4 {
+	rotenc4: rotary-encoder4 {
 		compatible = "rotary-encoder";
 		pinctrl-names = "default";
 		pinctrl-0 = <&rotenc4_pins>;
 
 		/* A, B channels (BCM GPIO numbers) */
 		gpios = <&gpio 27 GPIO_ACTIVE_LOW>,
-			<&gpio 14 GPIO_ACTIVE_LOW>;
+			<&gpio 11 GPIO_ACTIVE_LOW>;
 
 		rotary-encoder,relative-axis;
 		rotary-encoder,steps-per-period = <4>;
 		debounce-interval = <2>;
 	};
 
-	rotenc5: rotary-encoder@5 {
+	rotenc5: rotary-encoder5 {
 		compatible = "rotary-encoder";
 		pinctrl-names = "default";
 		pinctrl-0 = <&rotenc5_pins>;
@@ -211,7 +211,7 @@
 	};
 
 	rotenc4_pins: rotenc4_pins {
-		brcm,pins = <27 14>;
+		brcm,pins = <27 11>;
 		brcm,function = <0>; /* input */
 		brcm,pull = <2 2>; /* up */
 	};
