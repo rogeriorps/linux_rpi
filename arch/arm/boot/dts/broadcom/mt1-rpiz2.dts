@@ -1,5 +1,7 @@
 /dts-v1/;
 
+#include <dt-bindings/input/input.h>
+
 #include "bcm2710.dtsi"
 #include "bcm2709-rpi.dtsi"
 #include "bcm283x-rpi-csi1-2lane.dtsi"
@@ -101,6 +103,196 @@
 		rotary-encoder,relative-axis;
 		rotary-encoder,steps-per-period = <4>;
 		debounce-interval = <2>;
+	};
+
+	gpio_leds_pca: gpio-leds {
+		compatible = "gpio-leds";
+
+		mute1_led: mute1 {
+			label = "mute1";
+			gpios = <&pca9698 0 GPIO_ACTIVE_HIGH>;
+			default-state = "off";
+		};
+
+		mute2_led: mute2 {
+			label = "mute2";
+			gpios = <&pca9698 1 GPIO_ACTIVE_HIGH>;
+			default-state = "off";
+		};
+
+		mute3_led: mute3 {
+			label = "mute3";
+			gpios = <&pca9698 2 GPIO_ACTIVE_HIGH>;
+			default-state = "off";
+		};
+
+		mute4_led: mute4 {
+			label = "mute4";
+			gpios = <&pca9698 3 GPIO_ACTIVE_HIGH>;
+			default-state = "off";
+		};
+
+		solo1_led: solo1 {
+			label = "solo1";
+			gpios = <&pca9698 4 GPIO_ACTIVE_HIGH>;
+			default-state = "off";
+		};
+
+		solo2_led: solo2 {
+			label = "solo2";
+			gpios = <&pca9698 5 GPIO_ACTIVE_HIGH>;
+			default-state = "off";
+		};
+
+		solo3_led: solo3 {
+			label = "solo3";
+			gpios = <&pca9698 6 GPIO_ACTIVE_HIGH>;
+			default-state = "off";
+		};
+
+		solo4_led: solo4 {
+			label = "solo4";
+			gpios = <&pca9698 7 GPIO_ACTIVE_HIGH>;
+			default-state = "off";
+		};
+	};
+
+	gpio_keys_pca: gpio-keys {
+		compatible = "gpio-keys";
+		autorepeat;
+
+		prev_key {
+			label = "prev";
+			linux,code = <KEY_PREVIOUS>;
+			gpios = <&pca9698 8 GPIO_ACTIVE_LOW>;
+			bias-pull-up;
+		};
+
+		stop_key {
+			label = "stop";
+			linux,code = <KEY_STOP>;
+			gpios = <&pca9698 9 GPIO_ACTIVE_LOW>;
+			bias-pull-up;
+		};
+
+		play_key {
+			label = "play";
+			linux,code = <KEY_PLAY>;
+			gpios = <&pca9698 10 GPIO_ACTIVE_LOW>;
+			bias-pull-up;
+		};
+
+		ff_key {
+			label = "ff";
+			linux,code = <KEY_FASTFORWARD>;
+			gpios = <&pca9698 11 GPIO_ACTIVE_LOW>;
+			bias-pull-up;
+		};
+
+		frw_key {
+			label = "frw";
+			linux,code = <KEY_REWIND>;
+			gpios = <&pca9698 12 GPIO_ACTIVE_LOW>;
+			bias-pull-up;
+		};
+
+		next_key {
+			label = "next";
+			linux,code = <KEY_NEXT>;
+			gpios = <&pca9698 13 GPIO_ACTIVE_LOW>;
+			bias-pull-up;
+		};
+
+		up_key {
+			label = "up";
+			linux,code = <KEY_UP>;
+			gpios = <&pca9698 16 GPIO_ACTIVE_LOW>;
+			bias-pull-up;
+		};
+
+		down_key {
+			label = "down";
+			linux,code = <KEY_DOWN>;
+			gpios = <&pca9698 17 GPIO_ACTIVE_LOW>;
+			bias-pull-up;
+		};
+
+		left_key {
+			label = "left";
+			linux,code = <KEY_LEFT>;
+			gpios = <&pca9698 18 GPIO_ACTIVE_LOW>;
+			bias-pull-up;
+		};
+
+		right_key {
+			label = "right";
+			linux,code = <KEY_RIGHT>;
+			gpios = <&pca9698 19 GPIO_ACTIVE_LOW>;
+			bias-pull-up;
+		};
+
+		ok_key {
+			label = "ok";
+			linux,code = <KEY_OK>;
+			gpios = <&pca9698 20 GPIO_ACTIVE_LOW>;
+			bias-pull-up;
+		};
+
+		back_key {
+			label = "back";
+			linux,code = <KEY_BACK>;
+			gpios = <&pca9698 21 GPIO_ACTIVE_LOW>;
+			bias-pull-up;
+		};
+
+		menu_key {
+			label = "menu";
+			linux,code = <KEY_MENU>;
+			gpios = <&pca9698 22 GPIO_ACTIVE_LOW>;
+			bias-pull-up;
+		};
+
+		rotary_button1_key {
+			label = "rotary_button1";
+			linux,code = <KEY_1>;
+			gpios = <&pca9698 24 GPIO_ACTIVE_LOW>;
+			bias-pull-up;
+		};
+
+		rotary_button2_key {
+			label = "rotary_button2";
+			linux,code = <KEY_2>;
+			gpios = <&pca9698 25 GPIO_ACTIVE_LOW>;
+			bias-pull-up;
+		};
+
+		rotary_button3_key {
+			label = "rotary_button3";
+			linux,code = <KEY_3>;
+			gpios = <&pca9698 26 GPIO_ACTIVE_LOW>;
+			bias-pull-up;
+		};
+
+		rotary_button4_key {
+			label = "rotary_button4";
+			linux,code = <KEY_4>;
+			gpios = <&pca9698 27 GPIO_ACTIVE_LOW>;
+			bias-pull-up;
+		};
+
+		rotary_button5_key {
+			label = "rotary_button5";
+			linux,code = <KEY_5>;
+			gpios = <&pca9698 28 GPIO_ACTIVE_LOW>;
+			bias-pull-up;
+		};
+
+		rotary_button6_key {
+			label = "rotary_button6";
+			linux,code = <KEY_6>;
+			gpios = <&pca9698 29 GPIO_ACTIVE_LOW>;
+			bias-pull-up;
+		};
 	};
 };
 
@@ -320,213 +512,6 @@
 			"rotary_button5", "rotary_button6", "", "",
 			"", "", "", "", "", "", "", "";
 
-		mute1_hog {
-			gpio-hog;
-			gpios = <0 GPIO_ACTIVE_HIGH>;
-			line-name = "mute1";
-			output-low;
-		};
-
-		mute2_hog {
-			gpio-hog;
-			gpios = <1 GPIO_ACTIVE_HIGH>;
-			line-name = "mute2";
-			output-low;
-		};
-
-		mute3_hog {
-			gpio-hog;
-			gpios = <2 GPIO_ACTIVE_HIGH>;
-			line-name = "mute3";
-			output-low;
-		};
-
-		mute4_hog {
-			gpio-hog;
-			gpios = <3 GPIO_ACTIVE_HIGH>;
-			line-name = "mute4";
-			output-low;
-		};
-
-		solo1_hog {
-			gpio-hog;
-			gpios = <4 GPIO_ACTIVE_HIGH>;
-			line-name = "solo1";
-			output-low;
-		};
-
-		solo2_hog {
-			gpio-hog;
-			gpios = <5 GPIO_ACTIVE_HIGH>;
-			line-name = "solo2";
-			output-low;
-		};
-
-		solo3_hog {
-			gpio-hog;
-			gpios = <6 GPIO_ACTIVE_HIGH>;
-			line-name = "solo3";
-			output-low;
-		};
-
-		solo4_hog {
-			gpio-hog;
-			gpios = <7 GPIO_ACTIVE_HIGH>;
-			line-name = "solo4";
-			output-low;
-		};
-
-		prev_hog {
-			gpio-hog;
-			gpios = <8 GPIO_ACTIVE_HIGH>;
-			line-name = "prev";
-			input;
-			bias-pull-up;
-		};
-
-		stop_hog {
-			gpio-hog;
-			gpios = <9 GPIO_ACTIVE_HIGH>;
-			line-name = "stop";
-			input;
-			bias-pull-up;
-		};
-
-		play_hog {
-			gpio-hog;
-			gpios = <10 GPIO_ACTIVE_HIGH>;
-			line-name = "play";
-			input;
-			bias-pull-up;
-		};
-
-		ff_hog {
-			gpio-hog;
-			gpios = <11 GPIO_ACTIVE_HIGH>;
-			line-name = "ff";
-			input;
-			bias-pull-up;
-		};
-
-		frw_hog {
-			gpio-hog;
-			gpios = <12 GPIO_ACTIVE_HIGH>;
-			line-name = "frw";
-			input;
-			bias-pull-up;
-		};
-
-		next_hog {
-			gpio-hog;
-			gpios = <13 GPIO_ACTIVE_HIGH>;
-			line-name = "next";
-			input;
-			bias-pull-up;
-		};
-
-		up_hog {
-			gpio-hog;
-			gpios = <16 GPIO_ACTIVE_HIGH>;
-			line-name = "up";
-			input;
-			bias-pull-up;
-		};
-
-		down_hog {
-			gpio-hog;
-			gpios = <17 GPIO_ACTIVE_HIGH>;
-			line-name = "down";
-			input;
-			bias-pull-up;
-		};
-
-		left_hog {
-			gpio-hog;
-			gpios = <18 GPIO_ACTIVE_HIGH>;
-			line-name = "left";
-			input;
-			bias-pull-up;
-		};
-
-		right_hog {
-			gpio-hog;
-			gpios = <19 GPIO_ACTIVE_HIGH>;
-			line-name = "right";
-			input;
-			bias-pull-up;
-		};
-
-		ok_hog {
-			gpio-hog;
-			gpios = <20 GPIO_ACTIVE_HIGH>;
-			line-name = "ok";
-			input;
-			bias-pull-up;
-		};
-
-		back_hog {
-			gpio-hog;
-			gpios = <21 GPIO_ACTIVE_HIGH>;
-			line-name = "back";
-			input;
-			bias-pull-up;
-		};
-
-		menu_hog {
-			gpio-hog;
-			gpios = <22 GPIO_ACTIVE_HIGH>;
-			line-name = "menu";
-			input;
-			bias-pull-up;
-		};
-
-		rotary_button1_hog {
-			gpio-hog;
-			gpios = <24 GPIO_ACTIVE_HIGH>;
-			line-name = "rotary_button1";
-			input;
-			bias-pull-up;
-		};
-
-		rotary_button2_hog {
-			gpio-hog;
-			gpios = <25 GPIO_ACTIVE_HIGH>;
-			line-name = "rotary_button2";
-			input;
-			bias-pull-up;
-		};
-
-		rotary_button3_hog {
-			gpio-hog;
-			gpios = <26 GPIO_ACTIVE_HIGH>;
-			line-name = "rotary_button3";
-			input;
-			bias-pull-up;
-		};
-
-		rotary_button4_hog {
-			gpio-hog;
-			gpios = <27 GPIO_ACTIVE_HIGH>;
-			line-name = "rotary_button4";
-			input;
-			bias-pull-up;
-		};
-
-		rotary_button5_hog {
-			gpio-hog;
-			gpios = <28 GPIO_ACTIVE_HIGH>;
-			line-name = "rotary_button5";
-			input;
-			bias-pull-up;
-		};
-
-		rotary_button6_hog {
-			gpio-hog;
-			gpios = <29 GPIO_ACTIVE_HIGH>;
-			line-name = "rotary_button6";
-			input;
-			bias-pull-up;
-		};
 	};
 
 	pcm5122: pcm5122@4c {
