@@ -104,6 +104,12 @@ properties:
   wakeup-source:
     $ref: /schemas/types.yaml#/definitions/flag
 
+  nxp,irq-mask:
+    $ref: /schemas/types.yaml#/definitions/uint8-array
+    description:
+      Initial PCA9698 interrupt mask values for ports P0..P4. Bit value 1 masks
+      the interrupt for the corresponding pin, and bit value 0 enables it.
+
 patternProperties:
   "^(hog-[0-9]+|.+-hog(-[0-9]+)?)$":
     type: object
@@ -119,6 +125,25 @@ required:
 additionalProperties: false
 
 allOf:
+  - if:
+      properties:
+        compatible:
+          contains:
+            const: nxp,pca9698
+    then:
+      properties:
+        nxp,irq-mask:
+          minItems: 5
+          maxItems: 5
+  - if:
+      properties:
+        compatible:
+          not:
+            contains:
+              const: nxp,pca9698
+    then:
+      properties:
+        nxp,irq-mask: false
   - if:
       properties:
         compatible:

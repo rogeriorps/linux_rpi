@@ -37,6 +37,7 @@
 #define PCA953X_OUTPUT		0x01
 #define PCA953X_INVERT		0x02
 #define PCA953X_DIRECTION	0x03
+#define PCA9698_INT_MASK	0x04
 
 #define REG_ADDR_MASK		GENMASK(5, 0)
 #define REG_ADDR_EXT		BIT(6)
@@ -72,6 +73,7 @@
 
 #define PCA_INT			BIT(8)
 #define PCA_PCAL		BIT(9)
+#define PCA_PCA9698_INT_MASK	BIT(10)
 #define PCA_LATCH_INT		(PCA_PCAL | PCA_INT)
 #define PCA953X_TYPE		BIT(12)
 #define PCA957X_TYPE		BIT(13)
@@ -97,7 +99,7 @@ static const struct i2c_device_id pca953x_id[] = {
 	{ "pca9557", 8  | PCA953X_TYPE, },
 	{ "pca9574", 8  | PCA957X_TYPE | PCA_INT, },
 	{ "pca9575", 16 | PCA957X_TYPE | PCA_INT, },
-	{ "pca9698", 40 | PCA953X_TYPE, },
+	{ "pca9698", 40 | PCA953X_TYPE | PCA_INT | PCA_PCA9698_INT_MASK, },
 
 	{ "pcal6408", 8 | PCA953X_TYPE | PCA_LATCH_INT, },
 	{ "pcal6416", 16 | PCA953X_TYPE | PCA_LATCH_INT, },
@@ -228,6 +230,8 @@ struct pca953x_chip {
 	u8 (*recalc_addr)(struct pca953x_chip *chip, int reg, int off);
 	bool (*check_reg)(struct pca953x_chip *chip, unsigned int reg,
 			  u32 checkbank);
+	bool has_irq_mask_cfg;
+	u8 irq_mask_cfg[MAX_BANK];
 };
 
 static int pca953x_bank_shift(struct pca953x_chip *chip)
@@ -239,6 +243,7 @@ static int pca953x_bank_shift(struct pca953x_chip *chip)
 #define PCA953x_BANK_OUTPUT	BIT(1)
 #define PCA953x_BANK_POLARITY	BIT(2)
 #define PCA953x_BANK_CONFIG	BIT(3)
+#define PCA9698_BANK_IRQ_MASK	BIT(4)
 
 #define PCA957x_BANK_INPUT	BIT(0)
 #define PCA957x_BANK_POLARITY	BIT(1)
@@ -365,6 +370,9 @@ static bool pca953x_readable_register(struct device *dev, unsigned int reg)
 		       PCA953x_BANK_POLARITY | PCA953x_BANK_CONFIG;
 	}
 
+	if (chip->driver_data & PCA_PCA9698_INT_MASK)
+		bank |= PCA9698_BANK_IRQ_MASK;
+
 	if (chip->driver_data & PCA_PCAL) {
 		bank |= PCAL9xxx_BANK_IN_LATCH | PCAL9xxx_BANK_PULL_EN |
 			PCAL9xxx_BANK_PULL_SEL | PCAL9xxx_BANK_IRQ_MASK |
@@ -386,6 +394,9 @@ static bool pca953x_writeable_register(struct device *dev, unsigned int reg)
 		bank = PCA953x_BANK_OUTPUT | PCA953x_BANK_POLARITY |
 			PCA953x_BANK_CONFIG;
 	}
+
+	if (chip->driver_data & PCA_PCA9698_INT_MASK)
+		bank |= PCA9698_BANK_IRQ_MASK;
 
 	if (chip->driver_data & PCA_PCAL)
 		bank |= PCAL9xxx_BANK_IN_LATCH | PCAL9xxx_BANK_PULL_EN |
@@ -521,6 +532,47 @@ static int pca953x_read_regs(struct pca953x_chip *chip, int reg, unsigned long *
 		bitmap_set_value8(val, value[i], i * BANK_SZ);
 
 	return 0;
+}
+
+static int pca953x_read_irq_mask_cfg(struct pca953x_chip *chip)
+{
+	struct device *dev = &chip->client->dev;
+	int nbank = NBANK(chip);
+	int count;
+
+	if (!(chip->driver_data & PCA_PCA9698_INT_MASK))
+		return 0;
+
+	count = device_property_count_u8(dev, "nxp,irq-mask");
+	if (count == -EINVAL)
+		return 0;
+	if (count < 0)
+		return dev_err_probe(dev, count,
+				     "failed to get nxp,irq-mask length\n");
+	if (count != nbank)
+		return dev_err_probe(dev, -EINVAL,
+				     "nxp,irq-mask must provide %d bytes\n",
+				     nbank);
+
+	count = device_property_read_u8_array(dev, "nxp,irq-mask",
+					      chip->irq_mask_cfg, nbank);
+	if (count)
+		return dev_err_probe(dev, count, "failed to read nxp,irq-mask\n");
+
+	chip->has_irq_mask_cfg = true;
+	return 0;
+}
+
+static int pca953x_write_irq_mask_cfg(struct pca953x_chip *chip)
+{
+	u8 regaddr;
+
+	if (!chip->has_irq_mask_cfg)
+		return 0;
+
+	regaddr = chip->recalc_addr(chip, PCA9698_INT_MASK, 0);
+	return regmap_bulk_write(chip->regmap, regaddr,
+				 chip->irq_mask_cfg, NBANK(chip));
 }
 
 static int pca953x_gpio_direction_input(struct gpio_chip *gc, unsigned off)
@@ -1141,6 +1193,14 @@ static int pca953x_probe(struct i2c_client *client)
 	if (ret)
 		return ret;
 
+	ret = pca953x_read_irq_mask_cfg(chip);
+	if (ret)
+		return ret;
+
+	ret = pca953x_write_irq_mask_cfg(chip);
+	if (ret)
+		return dev_err_probe(dev, ret, "failed to write IRQ mask\n");
+
 	ret = pca953x_irq_setup(chip, irq_base);
 	if (ret)
 		return ret;
@@ -1193,6 +1253,16 @@ static int pca953x_regcache_sync(struct pca953x_chip *chip)
 		}
 	}
 #endif
+
+	if (chip->has_irq_mask_cfg) {
+		regaddr = chip->recalc_addr(chip, PCA9698_INT_MASK, 0);
+		ret = regcache_sync_region(chip->regmap, regaddr,
+					   regaddr + NBANK(chip) - 1);
+		if (ret) {
+			dev_err(dev, "Failed to sync INT mask registers: %d\n", ret);
+			return ret;
+		}
+	}
 
 	return 0;
 }
@@ -1282,7 +1352,8 @@ static const struct of_device_id pca953x_dt_ids[] = {
 	{ .compatible = "nxp,pca9557", .data = OF_953X( 8, 0), },
 	{ .compatible = "nxp,pca9574", .data = OF_957X( 8, PCA_INT), },
 	{ .compatible = "nxp,pca9575", .data = OF_957X(16, PCA_INT), },
-	{ .compatible = "nxp,pca9698", .data = OF_953X(40, 0), },
+	{ .compatible = "nxp,pca9698",
+	  .data = OF_953X(40, PCA_INT | PCA_PCA9698_INT_MASK), },
 
 	{ .compatible = "nxp,pcal6408", .data = OF_953X(8, PCA_LATCH_INT), },
 	{ .compatible = "nxp,pcal6416", .data = OF_953X(16, PCA_LATCH_INT), },
