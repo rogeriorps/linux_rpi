@@ -503,6 +503,8 @@
 		reset-gpios = <&gpio 6 GPIO_ACTIVE_LOW>;
 		interrupt-parent = <&gpio>;
 		interrupts = <7 IRQ_TYPE_LEVEL_LOW>;
+		/* Unmask only stop(9)/play(10), keep all other lines masked. */
+		nxp,irq-mask = /bits/ 8 <0xff 0xf9 0xff 0xff 0xff>;
 
 		gpio-line-names =
 			"mute1", "mute2", "mute3", "mute4", "solo1", "solo2", "solo3", "solo4",
